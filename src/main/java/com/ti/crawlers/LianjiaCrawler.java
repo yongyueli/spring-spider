@@ -7,8 +7,7 @@ import com.ti.crawlers.lianjia.LianJiaApi;
 import com.ti.crawlers.lianjia.LianJiaInterceptor;
 import com.ti.crawlers.lianjia.LoadUtil;
 import com.ti.dao.MongoLianJia;
-import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,11 +16,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import javax.net.ssl.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.cert.CertificateException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -61,10 +60,14 @@ public class LianjiaCrawler {
     }
 
     public static LianJiaApi lianJiaApi;
+
+
+
     static{
         try {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("localhost",8888)));
+            if(System.getProperty("Debug")!= null)
+                builder.proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("localhost",8888)));
             builder.retryOnConnectionFailure(true)
                     .sslSocketFactory(getSSLSocketFactory())
                     .hostnameVerifier(new HostnameVerifier() {
